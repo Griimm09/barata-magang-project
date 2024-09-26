@@ -6,7 +6,7 @@ Officetech adalah platform yang menghubungkan semua perangkat kantor Anda, memun
 ## Authors
 
 - [Satria Abimanyu Putra Wijayatama](https://www.github.com/bima595)
-- [Muhammad Arsyaq Ferry](https://github.com/Griimm09)
+- [Muhammad Arsyaq Fery Juliyanto](https://github.com/Griimm09)
 
 
 ## Tech Stack
