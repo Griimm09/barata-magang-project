@@ -49,6 +49,23 @@ const LoginForm = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (userType === 'Karyawan' && !formData.employeeId) {
+      setError('Wajib memasukan ID Karyawan');
+      return;
+    } else if (userType === 'Admin' && !formData.username && !formData.password) {
+      setError('Wajib memasukan ID Admin');
+      return;
+    } else if (userType === 'Admin') {
+      if (!formData.username) {
+        setError('Username wajib diisi');
+        return;
+      }
+      if (!formData.password) {
+        setError('Password wajib diisi');
+        return;
+      }
+    }
+
     try {
       const response = await axios.post('http://localhost:5000/login', {
         userType,

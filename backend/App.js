@@ -71,7 +71,7 @@ app.post('/login', (req, res) => {
       } else {
         res
           .status(401)
-          .json({ success: false, message: 'Invalid admin credentials' });
+          .json({ success: false, message: 'ID Admin salah' });
       }
     });
   } else if (userType === 'Karyawan') {
@@ -99,7 +99,7 @@ app.post('/login', (req, res) => {
         } else {
           res
             .status(401)
-            .json({ success: false, message: 'Invalid employee ID' });
+            .json({ success: false, message: 'ID Karyawan Salah' });
         }
       });
     }
@@ -988,7 +988,7 @@ app.post('/komputer', upload.array('foto', 10), (req, res) => {
 
         res.json({
           success: true,
-          message: 'Computer added successfully',
+          message: 'Data komputer berhasil ditambahkan',
           data: results,
         });
       });

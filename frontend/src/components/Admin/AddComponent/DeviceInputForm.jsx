@@ -14,6 +14,8 @@ import {
   Grid,
   Box,
   Typography,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -48,6 +50,8 @@ const DeviceInputForm = ({ open, onClose }) => {
   };
 
   const [formData, setFormData] = useState(initialFormData);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -77,13 +81,48 @@ const DeviceInputForm = ({ open, onClose }) => {
   };
 
   const handleClose = () => {
-    resetForm();  // Reset form data when the dialog is closed
+    resetForm();
+    setError('');
     onClose();
   };
 
-  const handleSubmit = async () => {
-    const data = new FormData();
+  const validateForm = () => {
+    const { nomor_aset, nama, os, serial_number, mac } = formData;
+  
+    // Validation for OS: Must contain "Windows" or "Mac OS"
+    const osRegex = /^(Windows|Mac OS)/;
+    if (!osRegex.test(os)) {
+      return 'OS harus berupa "Windows" atau "Mac OS".';
+    }
+  
+    // Validation for Serial Number: Must be more than 6 characters
+    if (serial_number.length <= 6) {
+      return 'Serial Number harus lebih dari 6 karakter.';
+    }
+  
+    // Validation for MAC address: Must match the pattern 11:22:33:44:55:66
+    const macRegex = /^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/;
+    if (!macRegex.test(mac)) {
+      return 'Format MAC Address harus sesuai dengan pola 11:22:33:44:55:66.';
+    }
+  
+    // Basic field validation
+    if (!nomor_aset || !nama) {
+      return 'Semua input wajib diisi, kecuali Foto dan Deskripsi.';
+    }
+  
+    return null; // No errors
+  };
+  
 
+  const handleSubmit = async () => {
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    const data = new FormData();
     for (const key in formData) {
       if (key === 'foto') {
         formData.foto.forEach((file) => {
@@ -102,134 +141,169 @@ const DeviceInputForm = ({ open, onClose }) => {
       });
 
       if (response.data.success) {
-        alert('Computer added successfully');
+        setSuccess(true);
+        setTimeout(() => {
+          setSuccess(false);
+          handleClose();
+        }, 2000);
       } else {
-        alert(response.data.message);
+        setError(response.data.message || 'Submit gagal. Tolong coba lagi.');
       }
     } catch (error) {
       console.error('There was an error submitting the form!', error);
-      alert('Submission failed. Please try again.');
-    } finally {
-      handleClose(); // Close and reset form after submission
+      setError('Submit gagal. Tolong coba lagi.');
     }
   };
 
+  const handleSnackbarClose = () => {
+    setError('');
+    setSuccess(false);
+  };
+
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>Input Device Details</DialogTitle>
-      <DialogContent>
-        <Grid container spacing={2}>
-          {[
-            { label: 'Nomor Aset', name: 'nomor_aset', type: 'text' },
-            { label: 'Jenis', name: 'jenis', type: 'text' },
-            { label: 'Nama', name: 'nama', type: 'text' },
-            { label: 'Operating System (OS)', name: 'os', type: 'text' },
-            { label: 'Manufaktur', name: 'manufaktur', type: 'text' },
-            { label: 'Model', name: 'model', type: 'text' },
-            { label: 'Serial Number (SN)', name: 'serial_number', type: 'text' },
-            { label: 'Masa Garansi', name: 'garansi', type: 'date' },
-            { label: 'Status Perangkat', name: 'status', type: 'select', options: statusOptions },
-            { label: 'Ram (GB)', name: 'ram', type: 'number' },
-            { label: 'Harddisk (GB)', name: 'harddisk', type: 'number' },
-            { label: 'Prosesor (Gen)', name: 'prosesor', type: 'text' },
-            { label: 'Tahun Pembelian', name: 'thn_pembelian', type: 'date' },
-            { label: 'Nilai Pembelian', name: 'nilai_pembelian', type: 'text' },
-            { label: 'Mac', name: 'mac', type: 'text' },
-          ].map((field, index) => (
-            <Grid item xs={12} sm={6} key={index}>
-              <Typography variant="subtitle1">{field.label}</Typography>
+    <>
+      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+        <DialogTitle>Input Device Details</DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2}>
+            {[
+              { label: 'Nomor Aset', name: 'nomor_aset', type: 'text' },
+              { label: 'Jenis', name: 'jenis', type: 'text' },
+              { label: 'Nama', name: 'nama', type: 'text' },
+              { label: 'Operating System (OS)', name: 'os', type: 'text' },
+              { label: 'Manufaktur', name: 'manufaktur', type: 'text' },
+              { label: 'Model', name: 'model', type: 'text' },
+              { label: 'Serial Number (SN)', name: 'serial_number', type: 'text' },
+              { label: 'Masa Garansi', name: 'garansi', type: 'date' },
+              { label: 'Status Perangkat', name: 'status', type: 'select', options: statusOptions },
+              { label: 'Ram (GB)', name: 'ram', type: 'number' },
+              { label: 'Harddisk (GB)', name: 'harddisk', type: 'number' },
+              { label: 'Prosesor (Gen)', name: 'prosesor', type: 'text' },
+              { label: 'Tahun Pembelian', name: 'thn_pembelian', type: 'date' },
+              { label: 'Nilai Pembelian', name: 'nilai_pembelian', type: 'text' },
+              { label: 'Mac', name: 'mac', type: 'text' },
+            ].map((field, index) => (
+              <Grid item xs={12} sm={6} key={index}>
+                <Typography variant="subtitle1">{field.label}</Typography>
+                <TextField
+                  variant="outlined"
+                  margin="dense"
+                  type={field.type}
+                  name={field.name}
+                  fullWidth
+                  value={formData[field.name]}
+                  onChange={handleInputChange}
+                  select={field.type === 'select'}
+                >
+                  {field.type === 'select' &&
+                    field.options.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                </TextField>
+              </Grid>
+            ))}
+            <Grid item xs={12}>
+              <Typography variant="subtitle1">Foto</Typography>
+              <Card variant="outlined" sx={{ textAlign: 'center', marginTop: 2 }}>
+                <CardContent>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    style={{ display: 'none' }}
+                    id="upload-images"
+                    name="foto"
+                    onChange={handleFileChange}
+                  />
+                  <label htmlFor="upload-images">
+                    <IconButton component="span">
+                      <PhotoCamera sx={{ fontSize: 48 }} />
+                    </IconButton>
+                  </label>
+                  {formData.foto.length > 0 && (
+                    <Grid container spacing={2} justifyContent="center" sx={{ marginTop: 2 }}>
+                      {formData.foto.map((file, index) => (
+                        <Grid item xs={4} key={index} position="relative">
+                          <Box
+                            component="img"
+                            sx={{
+                              height: 100,
+                              width: '100%',
+                              objectFit: 'cover',
+                              borderRadius: 1,
+                            }}
+                            alt={`Selected ${index + 1}`}
+                            src={URL.createObjectURL(file)}
+                          />
+                          <IconButton
+                            size="small"
+                            sx={{ position: 'absolute', top: 4, right: 4, backgroundColor: 'gray' }}
+                            onClick={() => handleImageRemove(index)}
+                          >
+                            <CancelIcon />
+                          </IconButton>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="subtitle1">Deskripsi</Typography>
               <TextField
                 variant="outlined"
                 margin="dense"
-                type={field.type}
-                name={field.name}
+                name="deskripsi"
                 fullWidth
-                value={formData[field.name]}
+                multiline
+                minRows={4}
+                value={formData.deskripsi}
                 onChange={handleInputChange}
-                select={field.type === 'select'}
-              >
-                {field.type === 'select' && field.options.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </TextField>
+              />
             </Grid>
-          ))}
-          <Grid item xs={12}>
-            <Typography variant="subtitle1">Foto</Typography>
-            <Card variant="outlined" sx={{ textAlign: 'center', marginTop: 2 }}>
-              <CardContent>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  style={{ display: 'none' }}
-                  id="upload-images"
-                  name="foto"
-                  onChange={handleFileChange}
-                />
-                <label htmlFor="upload-images">
-                  <IconButton component="span">
-                    <PhotoCamera sx={{ fontSize: 48 }} />
-                  </IconButton>
-                </label>
-                {formData.foto.length > 0 && (
-                  <Grid container spacing={2} justifyContent="center" sx={{ marginTop: 2 }}>
-                    {formData.foto.map((file, index) => (
-                      <Grid item xs={4} key={index} position="relative">
-                        <Box
-                          component="img"
-                          sx={{
-                            height: 100,
-                            width: '100%',
-                            objectFit: 'cover',
-                            borderRadius: 1,
-                          }}
-                          alt={`Selected ${index + 1}`}
-                          src={URL.createObjectURL(file)}
-                        />
-                        <IconButton
-                          size="small"
-                          sx={{ position: 'absolute', top: 4, right: 4, backgroundColor: 'gray' }}
-                          onClick={() => handleImageRemove(index)}
-                        >
-                          <CancelIcon />
-                        </IconButton>
-                      </Grid>
-                    ))}
-                  </Grid>
-                )}
-              </CardContent>
-            </Card>
           </Grid>
-          <Grid item xs={12}>
-            <Typography variant="subtitle1">Deskripsi</Typography>
-            <TextField
-              variant="outlined"
-              margin="dense"
-              type="text"
-              name="deskripsi"
-              fullWidth
-              multiline
-              rows={4}
-              value={formData.deskripsi}
-              onChange={handleInputChange}
-            />
-          </Grid>
-        </Grid>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleSubmit} variant="contained" color="primary">Submit</Button>
-      </DialogActions>
-    </Dialog>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleSubmit} variant="contained" color="primary">
+            Submit
+          </Button>
+          <Button onClick={handleClose} variant="outlined" color="secondary">
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={!!error}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={handleSnackbarClose} severity="error" variant="filled">
+          {error}
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={success}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={handleSnackbarClose} severity="success" variant="filled">
+          Data berhasil disimpan!
+        </Alert>
+      </Snackbar>
+    </>
   );
 };
 
 DeviceInputForm.propTypes = {
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-  };
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+};
 
 export default DeviceInputForm;

@@ -79,6 +79,12 @@ const UpdateComputers = ({ open, handleClose }) => {
   };
 
   const handleSearch = async () => {
+    if (!searchTerm) {
+      setSearchError('Wajib input nomor_aset atau serial number');
+      return;
+    }
+    setSearchError('');
+
     if (searchTerm) {
       try {
         const response = await fetch(

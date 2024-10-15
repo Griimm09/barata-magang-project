@@ -54,7 +54,7 @@ const EmployeeInputForm = ({ open, onClose }) => {
       }
     } catch (error) {
       console.error('Error adding employee:', error);
-      setError('Terjadi kesalahan,Check apakah nama atau ');
+      setError('NPK atau Nama sudah ada, coba lagi dengan data yang berbeda.');
     }
   };
 
