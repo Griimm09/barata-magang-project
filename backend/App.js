@@ -63,7 +63,6 @@ app.post('/login', (req, res) => {
         return res.status(500).send('Database query error');
       }
       if (results.length > 0) {
-        // Generate JWT token for Admin
         const token = jwt.sign({ role: 'Admin' }, jwtSecret, {
           expiresIn: '1h',
         });
@@ -75,23 +74,19 @@ app.post('/login', (req, res) => {
       }
     });
   } else if (userType === 'Karyawan') {
-    // Check against dummy data first
     const karyawan = karyawanData.find((k) => k.npk === employeeId);
     if (karyawan) {
-      // Generate JWT token for Karyawan
       const token = jwt.sign({ role: 'Karyawan' }, jwtSecret, {
         expiresIn: '1h',
       });
       res.json({ success: true, role: 'Karyawan', token: token });
     } else {
-      // If not found in JSON, check in the database
       const query = `SELECT * FROM pengguna WHERE npk = ? AND peran = 'Karyawan'`;
       db.query(query, [employeeId], (err, results) => {
         if (err) {
           return res.status(500).send('Database query error');
         }
         if (results.length > 0) {
-          // Generate JWT token for Karyawan
           const token = jwt.sign({ role: 'Karyawan' }, jwtSecret, {
             expiresIn: '1h',
           });

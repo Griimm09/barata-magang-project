@@ -19,8 +19,21 @@ const EmployeeInputForm = ({ open, onClose }) => {
   const [success, setSuccess] = useState(false);
 
   const handleSubmit = async () => {
-    if (!npk || !nama || !jabatan || !unitOrganisasi) {
+    if (!npk && !nama && !jabatan && !unitOrganisasi) {
       setError('Semua input wajib diisi');
+      return;
+    }else if(!npk){
+      setError('NPK wajib diisi');
+      return;
+    }else if(!nama){
+      setError('Nama wajib diisi');
+    }else if(!jabatan){
+      setError('Jabatan wajib diisi');
+    }else if(!unitOrganisasi){
+      setError('Unit Organisasi wajib diisi');
+    }
+
+    if (!npk || !nama || !jabatan || !unitOrganisasi) {
       return;
     }
 

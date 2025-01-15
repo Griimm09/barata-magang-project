@@ -71,8 +71,8 @@ const LoginForm = () => {
         userType,
         username: formData.username,
         password: formData.password,
-        employeeId: formData.employeeId,
-      });
+        employeeId: formData.employeeId,}
+      );
 
       if (response.data.success) {
         localStorage.setItem('jwtToken', response.data.token);
@@ -161,6 +161,8 @@ const LoginForm = () => {
       >
         Sign in
       </Button>
+      <div>
+    </div>
     </form>
   );
 };

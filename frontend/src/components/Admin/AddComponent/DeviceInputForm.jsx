@@ -88,30 +88,26 @@ const DeviceInputForm = ({ open, onClose }) => {
 
   const validateForm = () => {
     const { nomor_aset, nama, os, serial_number, mac } = formData;
-  
-    // Validation for OS: Must contain "Windows" or "Mac OS"
+
     const osRegex = /^(Windows|Mac OS)/;
     if (!osRegex.test(os)) {
       return 'OS harus berupa "Windows" atau "Mac OS".';
     }
-  
-    // Validation for Serial Number: Must be more than 6 characters
+
     if (serial_number.length <= 6) {
       return 'Serial Number harus lebih dari 6 karakter.';
     }
   
-    // Validation for MAC address: Must match the pattern 11:22:33:44:55:66
     const macRegex = /^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/;
     if (!macRegex.test(mac)) {
       return 'Format MAC Address harus sesuai dengan pola 11:22:33:44:55:66.';
     }
   
-    // Basic field validation
     if (!nomor_aset || !nama) {
       return 'Semua input wajib diisi, kecuali Foto dan Deskripsi.';
     }
   
-    return null; // No errors
+    return null; 
   };
   
 

@@ -15,6 +15,7 @@ import FileCopyIcon from '@mui/icons-material/FileCopyOutlined';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import DeviceInputForm from '../components/Admin/AddComponent/DeviceInputForm';
 import EmployeeInputForm from '../components/Admin/AddKaryawan/AddKaryawan';
+import { Box, IconButton } from '@mui/material';
 // import Footer from '../components/Footer';
 
 const AdminPage = () => {
@@ -93,7 +94,7 @@ const AdminPage = () => {
       <UpdateData />
       <DeviceKantor />
       <AsetKantor />
-      <SpeedDial
+      {/* <SpeedDial
         ariaLabel="Add Options"
         sx={{ position: 'fixed', bottom: 16, right: 16 }}
         icon={<SpeedDialIcon />}
@@ -108,7 +109,25 @@ const AdminPage = () => {
           tooltipTitle="Add Karyawan"
           onClick={handleOpenEmployeeForm}
         />
-      </SpeedDial>
+      </SpeedDial> */}
+      <Box
+      sx={{
+        position: 'fixed',
+        bottom: 16,
+        right: 16,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+      }}
+    >
+      <IconButton color="primary" onClick={handleOpenEmployeeForm}>
+        <PersonAddIcon />
+      </IconButton>
+      <IconButton color="primary" onClick={handleOpenDeviceForm}>
+        <FileCopyIcon />
+      </IconButton>
+      
+    </Box>
       <DeviceInputForm open={openDeviceForm} onClose={handleCloseDeviceForm} />
       <EmployeeInputForm open={openEmployeeForm} onClose={handleCloseEmployeeForm} />
       {/* <Footer /> */}
